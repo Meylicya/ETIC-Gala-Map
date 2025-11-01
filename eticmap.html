@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETIC Gala interactive map of Almunis</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+         body {
+            background: transparent;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /*la map*/
+        .map-container {
+            margin: 2rem auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            height: 70vh;
+            min-height: 500px;
+            position: relative;
+            border: 1px solid #333;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+        }
+
+        /*les profils des alumnis*/
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .profile-card {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: modalFadeIn 0.4s ease-out;
+            border: 1px solid #333;
+        } 
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #D4AF37;
+            transition: color 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-btn:hover {
+            color: #f0d36e;
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1.5rem;
+            border: 2px solid #D4AF37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .profile-info h2 {
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .profile-info .role {
+            color: #D4AF37;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .profile-bio {
+            margin-bottom: 2rem;
+            line-height: 1.7;
+            color: #cccccc;
+            font-size: 1rem;
+        }
+
+        .profile-location {
+            display: flex;
+            align-items: center;
+            color: #D4AF37;
+            font-weight: 500;
+            padding-top: 1rem;
+            border-top: 1px solid #333;
+        }
+
+        .location-icon {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .map-container {
+                height: 60vh;
+                min-height: 400px;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-img {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            
+            .profile-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </main>
+
+    <div class="profile-modal" id="profile-modal">
+        <div class="profile-card">
+            <button class="close-btn" id="close-modal">&times;</button>
+            <div class="profile-header">
+                <img class="profile-img" id="profile-img" src="" alt="Profile Image">
+                <div class="profile-info">
+                    <h2 id="profile-name">Name</h2>
+                    <div class="role" id="profile-role">Role</div>
+                </div>
+            </div>
+            <div class="profile-bio" id="profile-bio">
+                The description of the alumni
+            </div>
+            <div class="profile-location">
+                <span class="location-icon">📍</span>
+                <span id="profile-location">Location</span>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // données des alumnis
+        const people = [
+            { 
+                name: "X Y", 
+                country: "France", 
+                coords: [48.8566, 2.3522], 
+                role: "Fondateur de startup tech",
+                bio: "description et parcours",
+                img: ""
+            },
+            { 
+                name: "X Y", 
+                country: "Algeria", 
+                coords: [36.7538, 3.0588], 
+                role: "Developpeur Full Stack",
+                 bio: "description et parcours",
+                img: ""
+            },
+            { 
+                name: "X Y", 
+                country: "Mexico", 
+                coords: [19.4326, -99.1332], 
+                role: "Directeur chez xyz société",
+                 bio: "description et parcours",
+                img: ""
+            },
+            { 
+                name: "X Y", 
+                country: "Japan", 
+                coords: [35.6762, 139.6503], 
+                role: "Ingénieur en robotique",
+                 bio: "description et parcours",
+                img: ""
+            },
+            { 
+                name: "X Y", 
+                country: "United States", 
+                coords: [40.7128, -74.0060], 
+                role: "Product Manager",
+                bio: "description et parcours",
+                img: ""
+            },
+            { 
+                name: "X Y", 
+                country: "South Africa", 
+                coords: [-33.9249, 18.4241], 
+                role: "Professeur d'archi",
+                bio: "description et parcours",
+                img: ""
+            }
+        ];
+
+        //dark theme de la map
+        const map = L.map('map').setView([20, 0], 2);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        const customIcon = L.divIcon({
+            html: `
+                <div style="
+                    background-color: #D4AF37;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    border: 3px solid #0a0a0a;
+                    box-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
+                "></div>
+            `,
+            className: 'custom-marker',
+            iconSize: [26, 26],
+            iconAnchor: [13, 13]
+        });
+
+        const markers = [];
+        
+        people.forEach(person => {
+            const marker = L.marker(person.coords, { icon: customIcon })
+                .addTo(map)
+                .bindPopup(`
+                    <div style="text-align: center; color: #333; padding: 10px; font-family: 'Inter', sans-serif;">
+                        <h3 style="margin: 5px 0; color: #1a1a1a; font-weight: 600;">${person.name}</h3>
+                        <p style="margin: 0; color: #666;">${person.role}</p>
+                    </div>
+                `);
+
+            marker.person = person;
+
+            marker.on('click', function() {
+                showProfile(person);
+            });
+            
+            markers.push(marker);
+        });
+
+        const profileModal = document.getElementById('profile-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        
+        function showProfile(person) {
+            document.getElementById('profile-name').textContent = person.name;
+            document.getElementById('profile-role').textContent = person.role;
+            document.getElementById('profile-bio').textContent = person.bio;
+            document.getElementById('profile-location').textContent = `${person.country}`;
+            document.getElementById('profile-img').src = person.img;
+            document.getElementById('profile-img').alt = `${person.name} pfp de l'alumni`;
+            
+            profileModal.style.display = 'flex';
+        }
+
+        closeModalBtn.addEventListener('click', function() {
+            profileModal.style.display = 'none';
+        });
+
+        profileModal.addEventListener('click', function(e) {
+            if (e.target === profileModal) {
+                profileModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
