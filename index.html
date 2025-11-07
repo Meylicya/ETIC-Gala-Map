@@ -199,57 +199,65 @@
         // données des alumnis
         const people = [
             { 
-                name: "X Y", 
+                name: "BESSALAH Aniss", 
                 country: "France", 
-                coords: [48.8566, 2.3522], 
-                role: "Fondateur de startup tech",
-                bio: "description et parcours",
-                img: ""
+                coords: [45.7640, 4.8357], 
+                role: "Master Thesis @IBM Research",
+                bio: "description et parcours...",
+                img: "bessalah.png"
+            },
+                        { 
+                name: "BELKESSA Linda", 
+                country: "France", 
+                coords: [48.8499, 2.6370], 
+                role: "PhD Candidate (CLEARDOC)",
+                bio: "description et parcours...",
+                img: "belkessa.png"
             },
             { 
-                name: "X Y", 
-                country: "Algeria", 
+                name: "GUENDOUZ Yanis", 
+                country: "Algérie", 
                 coords: [36.7538, 3.0588], 
-                role: "Developpeur Full Stack",
-                 bio: "description et parcours",
-                img: ""
+                role: "Consultant Senior IT chez Forvis Mazars",
+                 bio: "Description et parcours...",
+                img: "guendouz.png"
             },
             { 
-                name: "X Y", 
-                country: "Mexico", 
-                coords: [19.4326, -99.1332], 
-                role: "Directeur chez xyz société",
-                 bio: "description et parcours",
-                img: ""
+                name: "ZERROUK Madjda", 
+                country: "Irelande", 
+                coords: [53.4129, -8.2439], 
+                role: "Engineering Team Lead",
+                 bio: "description et parcours...",
+                img: "zerrouk.jpg"
             },
             { 
-                name: "X Y", 
-                country: "Japan", 
-                coords: [35.6762, 139.6503], 
-                role: "Ingénieur en robotique",
-                 bio: "description et parcours",
-                img: ""
+                name: "KHELIF Mouloude", 
+                country: "La Suisse", 
+                coords: [46.8182, 8.2275], 
+                role: "Ingénieur en informatique",
+                 bio: "description et parcours...",
+                img: "eticgala.png"
             },
             { 
-                name: "X Y", 
-                country: "United States", 
-                coords: [40.7128, -74.0060], 
-                role: "Product Manager",
-                bio: "description et parcours",
-                img: ""
+                name: "TESSA Melissa", 
+                country: "Luxembourg", 
+                coords: [49.8153, 6.1296], 
+                role: "Ingénieur en informatique",
+                bio: "description et parcours...",
+                img: "tessa.png"
             },
             { 
-                name: "X Y", 
-                country: "South Africa", 
-                coords: [-33.9249, 18.4241], 
-                role: "Professeur d'archi",
-                bio: "description et parcours",
-                img: ""
+                name: "MAHOUNI Nihad", 
+                country: "L'Allemagne", 
+                coords: [51.1657, 10.4515], 
+                role: "Data Analytics Consultant at EPAM Systems",
+                bio: "description et parcours...",
+                img: "eticgala.png"
             }
         ];
 
         //dark theme de la map
-        const map = L.map('map').setView([20, 0], 2);
+        const map = L.map('map').setView([40, 0], 2.5);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -319,5 +327,4 @@
         });
     </script>
 </body>
-
 </html>
